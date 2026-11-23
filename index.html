@@ -113,7 +113,7 @@ $('#file').onchange=e=>{
     me.p=d;$('#ph').style.backgroundImage=`url(${d})`;$('#ph').textContent='';
     URL.revokeObjectURL(img.src)};
   img.src=URL.createObjectURL(f)};
-const okPhoto=p=>typeof p==='string'&&/^data:image\\/jpeg;base64,[A-Za-z0-9+\\/=]+$/.test(p)&&p.length<6000;
+const okPhoto=p=>typeof p==='string'&&/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(p)&&p.length<6000;
 function kSvg(color,photo,id){
   let pet='';[-72,-48,-24,0,24,48,72].forEach(a=>pet+=`<ellipse cx="60" cy="56" rx="9" ry="21" transform="rotate(${a} 60 78)"/>`);
   let pet2='';[-60,-30,0,30,60].forEach(a=>pet2+=`<ellipse cx="60" cy="62" rx="7" ry="15" transform="rotate(${a} 60 78)"/>`);
