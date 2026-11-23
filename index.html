@@ -4,8 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>ลอยกระทงออนไลน์ 🪷</title>
-<meta name="description" content="ลอยกระทงออนไลน์กับเพื่อน ๆ ได้จากทุกที่ สร้างห้องแล้วแชร์รหัสชวนกันมาลอยกระทง">
-<meta name="theme-color" content="#10143a">
 <link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root{color-scheme:dark;--gold:#ffd27a;--ink:#fff7e6;--card:rgba(20,16,50,.72);--line:rgba(255,210,122,.35);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -61,7 +59,6 @@ button:disabled{opacity:.5}
 <div id="sky"><div id="moon"></div></div>
 <div id="water"><div class="wave" style="top:6%"></div><div class="wave" style="top:30%;animation-duration:13s"></div><div class="wave" style="top:58%;animation-duration:11s;animation-direction:reverse"></div></div>
 <div id="layer"></div>
-
 <div id="lobby" class="card">
   <h1>🪷 ลอยกระทงออนไลน์</h1>
   <p class="sub">ลอยกระทงด้วยกัน แม้อยู่คนละที่</p>
@@ -71,54 +68,39 @@ button:disabled{opacity:.5}
   <input id="name" type="text" maxlength="12" placeholder="ชื่อของคุณ">
   <div class="sw" id="sw"></div>
   <div id="joinInfo" class="small" style="display:none;margin:4px 0"></div>
-  <div id="configHint" class="small" style="margin:8px 0 2px;color:#ffd0a0">ก่อนเปิดใช้สาธารณะ เจ้าของเว็บต้องตั้งค่า Supabase ในไฟล์ index.html ตามคู่มือ README</div>
   <button id="create" style="width:100%;margin-top:4px">✨ สร้างห้องใหม่</button>
   <div class="row" style="margin-top:10px"><input id="code" type="text" maxlength="8" placeholder="รหัสห้อง" style="margin:0"><button class="g" id="join" style="flex:0 0 auto">เข้าห้อง</button></div>
 </div>
-
 <div id="hud"><div class="card">
   <div class="row"><div style="flex:1.3"><div class="small">ห้อง <b id="rc" style="color:var(--gold);letter-spacing:1px"></b> · <span id="cnt"></span></div></div><button class="g" id="share" style="flex:0 0 auto;padding:8px 12px">🔗 ส่งลิงก์ชวน</button></div>
   <input id="link" type="text" readonly style="display:none;font-size:12px">
   <div id="who"></div>
-  <div id="note"></div><div class="small" style="margin-top:4px;opacity:.7">ชื่อ รูปโปรไฟล์ และคำอธิษฐานจะแสดงให้ผู้ที่อยู่ในห้องเดียวกันเห็น</div>
+  <div id="note"></div>
 </div></div>
-
 <div id="bar"><div class="card">
   <input id="wish" type="text" maxlength="40" placeholder="เขียนคำอธิษฐาน (ไม่ใส่ก็ได้)">
   <button id="float" style="width:100%">🪷 ลอยกระทง</button>
 </div></div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 <script>
-// ตั้งค่าสองค่านี้ก่อนนำเว็บขึ้นสาธารณะ ดูขั้นตอนใน README.md
-const SUPABASE_URL = 'ใส่_PROJECT_URL_ที่นี่';
-const SUPABASE_PUBLISHABLE_KEY = 'ใส่_PUBLISHABLE_KEY_ที่นี่';
-const supabaseConfigured = /^https:\/\//.test(SUPABASE_URL) &&
-  SUPABASE_URL.includes('.supabase.co') &&
-  SUPABASE_PUBLISHABLE_KEY.startsWith('sb_publishable_');
-let supabaseClient = null;
-if(supabaseConfigured && window.supabase?.createClient){
-  try{supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY)}
-  catch(err){console.error('Supabase initialization failed:',err)}
-}
-const clientId = (window.crypto?.randomUUID?.() || ('guest-'+Math.random().toString(36).slice(2)));
-let localState={n:'',p:'',c:0,w:'',f:0};
-let roomReady=false;
-
 const $=s=>document.querySelector(s);
 const COLORS=['#ff7eb6','#ffb347','#b388ff','#5ce1e6'];
-let me={n:'',p:'',c:0},code='',room=null,els={},uid=0;
-
-// stars
+const firebaseConfig={
+  apiKey:"AIzaSyBnY3X-5-a5i5Dckco_lbGlgQXTUWRSbwI",
+  authDomain:"loy-krathong-online-b97ab.firebaseapp.com",
+  databaseURL:"https://loy-krathong-online-b97ab-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:"loy-krathong-online-b97ab",
+  storageBucket:"loy-krathong-online-b97ab.firebasestorage.app",
+  messagingSenderId:"597087474730",
+  appId:"1:597087474730:web:9e0770fd85ac6b332e1f53",
+  measurementId:"G-SVCJ0T90H7"
+};
+let app,auth,db,user=null,me={n:'',p:'',c:0},code='',room=null,els={},uid=0;
+try{app=firebase.initializeApp(firebaseConfig);auth=firebase.auth();db=firebase.database()}catch(e){console.error('Firebase initialization failed',e)}
 for(let i=0;i<80;i++){const s=document.createElement('div');s.className='star';s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*3}s;opacity:${.4+Math.random()*.6}`;$('#sky').appendChild(s)}
-
-// แจ้งสถานะการตั้งค่าระบบห้องออนไลน์
-if(supabaseConfigured && supabaseClient){$('#configHint').textContent='ระบบห้องออนไลน์พร้อมใช้งานแล้ว ✨';$('#configHint').style.color='#b7f7c5'}
-
-// colour swatches
-COLORS.forEach((c,i)=>{const e=document.createElement('i');e.style.background=c;if(i==0)e.className='on';e.onclick=()=>{me.c=i;document.querySelectorAll('#sw i').forEach((x,j)=>x.classList.toggle('on',j==i))};$('#sw').appendChild(e)});
-
-// photo -> small square jpeg
+COLORS.forEach((c,i)=>{const e=document.createElement('i');e.style.background=c;if(i===0)e.className='on';e.onclick=()=>{me.c=i;document.querySelectorAll('#sw i').forEach((x,j)=>x.classList.toggle('on',j===i))};$('#sw').appendChild(e)});
 $('#ph').onclick=()=>$('#file').click();
 $('#file').onchange=e=>{
   const f=e.target.files[0];if(!f)return;
@@ -131,14 +113,10 @@ $('#file').onchange=e=>{
     me.p=d;$('#ph').style.backgroundImage=`url(${d})`;$('#ph').textContent='';
     URL.revokeObjectURL(img.src)};
   img.src=URL.createObjectURL(f)};
-
-const okPhoto=p=>typeof p==='string'&&/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/.test(p)&&p.length<6000;
-
+const okPhoto=p=>typeof p==='string'&&/^data:image\\/jpeg;base64,[A-Za-z0-9+\\/=]+$/.test(p)&&p.length<6000;
 function kSvg(color,photo,id){
-  let pet='';
-  [-72,-48,-24,0,24,48,72].forEach(a=>pet+=`<ellipse cx="60" cy="56" rx="9" ry="21" transform="rotate(${a} 60 78)"/>`);
-  let pet2='';
-  [-60,-30,0,30,60].forEach(a=>pet2+=`<ellipse cx="60" cy="62" rx="7" ry="15" transform="rotate(${a} 60 78)"/>`);
+  let pet='';[-72,-48,-24,0,24,48,72].forEach(a=>pet+=`<ellipse cx="60" cy="56" rx="9" ry="21" transform="rotate(${a} 60 78)"/>`);
+  let pet2='';[-60,-30,0,30,60].forEach(a=>pet2+=`<ellipse cx="60" cy="62" rx="7" ry="15" transform="rotate(${a} 60 78)"/>`);
   const face=okPhoto(photo)?`<image href="${photo}" x="46" y="38" width="28" height="28" clip-path="url(#c${id})" preserveAspectRatio="xMidYMid slice"/>`:`<text x="60" y="58" font-size="16" text-anchor="middle">🪷</text>`;
   return `<svg viewBox="0 0 120 100" width="100%"><defs><clipPath id="c${id}"><circle cx="60" cy="52" r="14"/></clipPath></defs>
   <ellipse cx="60" cy="86" rx="52" ry="11" fill="#1f7a41"/><ellipse cx="60" cy="82" rx="48" ry="10" fill="#47b86a"/>
@@ -148,13 +126,9 @@ function kSvg(color,photo,id){
   <g class="flame"><ellipse cx="60" cy="9" rx="4" ry="7" fill="#ffb020"/><ellipse cx="60" cy="10" rx="2" ry="4" fill="#fff6b0"/></g>
   <circle cx="60" cy="52" r="16.5" fill="#fff7e0" stroke="#ffd27a" stroke-width="2"/>${face}
   <circle cx="18" cy="78" r="5" fill="#ff9f1c"/><circle cx="102" cy="78" r="5" fill="#ff9f1c"/><circle cx="30" cy="86" r="4" fill="#ffd166"/><circle cx="90" cy="86" r="4" fill="#ffd166"/></svg>`}
-
 function lane(s){let h=0;for(const ch of s)h=(h*31+ch.charCodeAt(0))>>>0;return (h%1000)/1000}
-
 function render(list){
-  const seen=new Set();
-  const who=$('#who');who.textContent='';
-  let n=0;
+  const seen=new Set(),who=$('#who');who.textContent='';let n=0;
   list.forEach(pe=>{
     const p=pe.presence||{};if(!p.n)return;n++;
     const key=pe.peer;seen.add(key);
@@ -163,13 +137,11 @@ function render(list){
     const t=document.createElement('span');t.textContent=String(p.n).slice(0,12)+(pe.isMe?' (คุณ)':'');
     chip.append(b,t);who.appendChild(chip);
     if(!p.f){if(els[key]){els[key].el.remove();delete els[key]}return}
-    const sig=[p.n,p.p,p.c,p.w,p.f].join('|');
-    let o=els[key];
+    const sig=[p.n,p.p,p.c,p.w,p.f].join('|');let o=els[key];
     if(!o||o.sig!==sig){
       if(o)o.el.remove();
       const el=document.createElement('div');el.className='k';
-      const inn=document.createElement('div');inn.className='in';
-      inn.innerHTML=kSvg(COLORS[p.c%4]||COLORS[0],p.p,++uid);
+      const inn=document.createElement('div');inn.className='in';inn.innerHTML=kSvg(COLORS[p.c%4]||COLORS[0],p.p,++uid);
       const nm=document.createElement('div');nm.className='nm';nm.textContent=String(p.n).slice(0,12);
       const ws=document.createElement('div');ws.className='ws';ws.textContent=String(p.w||'').slice(0,40);
       inn.append(nm,ws);el.appendChild(inn);$('#layer').appendChild(el);
@@ -180,109 +152,61 @@ function render(list){
   Object.keys(els).forEach(k=>{if(!seen.has(k)){els[k].el.remove();delete els[k]}});
   $('#cnt').textContent=n+' คนในห้อง';
 }
-
-// drift
-(function tick(){
-  const now=Date.now();
-  for(const k in els){const o=els[k];
-    const x=((o.l*60+(now-o.f)/1000*1.1)%125)-12;
-    o.el.style.left=x+'%';o.el.style.top=(62+o.l*26)+'%'}
-  requestAnimationFrame(tick)})();
-
-function getPresence(){
-  return {
-    n:me.n, p:me.p, c:me.c,
-    w:String(localState.w||'').slice(0,40),
-    f:Number(localState.f)||0
-  };
+(function tick(){const now=Date.now();for(const k in els){const o=els[k];const x=((o.l*60+(now-o.f)/1000*1.1)%125)-12;o.el.style.left=x+'%';o.el.style.top=(62+o.l*26)+'%'}requestAnimationFrame(tick)})();
+async function ensureSignedIn(){
+  if(!auth||!db)throw new Error('Firebase ยังเริ่มต้นไม่สำเร็จ กรุณาตรวจสอบการตั้งค่า');
+  if(auth.currentUser)return auth.currentUser;
+  const cred=await auth.signInAnonymously();return cred.user;
 }
-
-function renderPresence(state){
-  const peers=[];
-  Object.entries(state||{}).forEach(([peer,entries])=>{
-    const p=Array.isArray(entries)?entries[entries.length-1]:entries;
-    if(p)peers.push({peer,isMe:peer===clientId,presence:p});
-  });
-  render(peers);
-}
-
 async function setP(patch){
-  Object.assign(localState,patch);
-  if(room&&roomReady){
-    try{await room.track(getPresence())}
-    catch(err){$('#note').textContent='การส่งข้อมูลสะดุด กรุณาลองใหม่อีกครั้ง'}
-  }else{
-    render([{peer:clientId,isMe:true,presence:getPresence()}]);
-  }
+  if(!room||!user)return;
+  const safe={...patch};
+  if(safe.n!==undefined)safe.n=String(safe.n).slice(0,12);
+  if(safe.w!==undefined)safe.w=String(safe.w).slice(0,40);
+  if(safe.p!==undefined&&!okPhoto(safe.p))safe.p='';
+  await room.playerRef.child('presence').update(safe);
 }
-
 async function enter(c){
-  code=String(c||'').toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,8);
-  if(!code){alert('กรุณากรอกรหัสห้อง');return}
+  code=String(c||'').toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,8);if(!code)return;
   me.n=($('#name').value.trim()||'เพื่อน').slice(0,12);
-  localState={n:me.n,p:me.p,c:me.c,w:'',f:0};
-  try{location.hash=code}catch(e){}
-  $('#lobby').style.display='none';$('#hud').style.display='block';$('#bar').style.display='block';
-  $('#rc').textContent=code;
-
-  if(room&&supabaseClient){
-    const oldRoom=room;room=null;roomReady=false;
-    try{await supabaseClient.removeChannel(oldRoom)}catch(e){}
-  }
-
-  if(!supabaseClient){
-    $('#note').textContent='โหมดทดลองคนเดียว: เจ้าของเว็บยังไม่ได้ตั้งค่า Supabase จึงยังเชื่อมผู้เล่นจากอุปกรณ์อื่นไม่ได้';
-    render([{peer:clientId,isMe:true,presence:getPresence()}]);
-    return;
-  }
-
+  $('#create').disabled=$('#join').disabled=true;
+  $('#note').textContent='กำลังเชื่อมต่อห้องออนไลน์…';
   try{
-    room=supabaseClient.channel('loy-'+code,{
-      config:{private:false,presence:{key:clientId}}
-    });
-    room.on('presence',{event:'sync'},()=>renderPresence(room.presenceState()));
-    room.subscribe(async status=>{
-      if(status==='SUBSCRIBED'){
-        roomReady=true;
-        try{
-          await room.track(getPresence());
-          renderPresence(room.presenceState());
-          $('#note').textContent='แชร์รหัสห้องหรือกด “ส่งลิงก์ชวน” ให้เพื่อนเข้ามาลอยกระทงด้วยกันได้เลย 💕';
-        }catch(err){
-          roomReady=false;
-          $('#note').textContent='เชื่อมต่อห้องได้ แต่ส่งสถานะไม่สำเร็จ กรุณาตรวจสอบการตั้งค่า Realtime';
-        }
-      }else if(['CHANNEL_ERROR','TIMED_OUT','CLOSED'].includes(status)){
-        roomReady=false;
-        $('#note').textContent='เชื่อมต่อห้องออนไลน์ไม่สำเร็จ กรุณาตรวจสอบ URL / Publishable key และการอนุญาต Public access ใน Supabase';
-        render([{peer:clientId,isMe:true,presence:getPresence()}]);
-      }
-    });
+    user=await ensureSignedIn();
+    if(room&&room.playerRef)await room.playerRef.remove().catch(()=>{});
+    Object.values(els).forEach(o=>o.el.remove());els={};
+    const roomRef=db.ref('rooms/'+code),playersRef=roomRef.child('players'),playerRef=playersRef.child(user.uid);
+    room={ref:roomRef,playersRef,playerRef};
+    await playerRef.set({presence:{n:me.n,p:me.p,c:me.c,w:'',f:0,updatedAt:firebase.database.ServerValue.TIMESTAMP}});
+    playerRef.onDisconnect().remove();
+    try{location.hash=code}catch(e){}
+    $('#lobby').style.display='none';$('#hud').style.display='block';$('#bar').style.display='block';$('#rc').textContent=code;
+    playersRef.on('value',snap=>{
+      const list=[];snap.forEach(child=>{const val=child.val()||{};list.push({peer:child.key,isMe:child.key===user.uid,presence:val.presence||{}})});
+      render(list);
+    },err=>{$('#note').textContent='อ่านข้อมูลห้องไม่ได้: '+err.message});
+    $('#note').textContent='ออนไลน์แล้ว! แชร์รหัสห้องให้เพื่อนเข้ามาลอยกระทงด้วยกันได้เลย 💕';
   }catch(err){
-    room=null;roomReady=false;
-    $('#note').textContent='เกิดข้อผิดพลาดในการเชื่อมต่อห้องออนไลน์ กรุณาลองโหลดหน้าเว็บใหม่';
-    render([{peer:clientId,isMe:true,presence:getPresence()}]);
-  }
+    console.error(err);$('#note').textContent='เชื่อมต่อไม่สำเร็จ: '+(err.message||'กรุณาตรวจสอบ Firebase Authentication และ Database Rules');
+    $('#lobby').style.display='block';$('#hud').style.display='none';$('#bar').style.display='none';
+  }finally{$('#create').disabled=$('#join').disabled=false}
 }
-
 const mk=()=>{const a='abcdefghjkmnpqrstuvwxyz23456789';let s='';for(let i=0;i<5;i++)s+=a[Math.floor(Math.random()*a.length)];return s};
 $('#create').onclick=()=>enter(mk());
 $('#join').onclick=()=>enter($('#code').value);
-$('#float').onclick=()=>{
-  setP({w:$('#wish').value.trim().slice(0,40),f:Date.now(),n:me.n,p:me.p,c:me.c});
-  $('#float').textContent='🪷 ลอยอีกดวง';$('#wish').value=''};
+$('#float').onclick=async()=>{
+  if(!room)return;
+  $('#float').disabled=true;
+  try{await setP({w:$('#wish').value.trim().slice(0,40),f:Date.now(),n:me.n,p:me.p,c:me.c,updatedAt:firebase.database.ServerValue.TIMESTAMP});$('#float').textContent='🪷 ลอยอีกดวง';$('#wish').value=''}
+  catch(e){console.error(e);$('#note').textContent='ส่งกระทงไม่สำเร็จ: '+e.message}
+  finally{$('#float').disabled=false}
+};
 $('#share').onclick=async()=>{
-  const url=location.origin+location.pathname+'#'+code;
-  const L=$('#link');L.value=url;L.style.display='block';L.select();
-  try{await navigator.clipboard.writeText(url);$('#share').textContent='✅ คัดลอกแล้ว'}catch(e){
-    $('#share').textContent='🔗 คัดลอกลิงก์ด้านล่าง'}
-  setTimeout(()=>$('#share').textContent='🔗 ส่งลิงก์ชวน',2500)};
-
-// join via link
-if(!window.supabase?.createClient){$('#configHint').textContent='โหลดบริการเชื่อมต่อไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เน็ตแล้วโหลดใหม่';$('#configHint').style.color='#ffb3a7'}
-function fromHash(){
-  const h=(location.hash||'').replace('#','');
-  if(h&&!code){$('#code').value=h;$('#joinInfo').style.display='block';$('#joinInfo').textContent='🎟️ มีคนชวนคุณเข้าห้อง '+h+' — ใส่ชื่อ รูป แล้วกดเข้าห้อง'}}
+  const url=location.href.split('#')[0]+'#'+code,L=$('#link');L.value=url;L.style.display='block';L.select();
+  try{await navigator.clipboard.writeText(url);$('#share').textContent='✅ คัดลอกแล้ว'}catch(e){$('#share').textContent='🔗 คัดลอกลิงก์ด้านล่าง'}
+  setTimeout(()=>$('#share').textContent='🔗 ส่งลิงก์ชวน',2500);
+};
+function fromHash(){const h=(location.hash||'').replace('#','');if(h&&!code){$('#code').value=h;$('#joinInfo').style.display='block';$('#joinInfo').textContent='🎟️ มีคนชวนคุณเข้าห้อง '+h+' — ใส่ชื่อ รูป แล้วกดเข้าห้อง'}}
 fromHash();addEventListener('hashchange',fromHash);
 </script>
 </body>
