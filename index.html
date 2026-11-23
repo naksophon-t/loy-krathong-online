@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ลอยกระทงออนไลน์ 🪷</title>
+<meta name="description" content="ลอยกระทงออนไลน์กับเพื่อน ๆ ได้จากทุกที่ สร้างห้องแล้วแชร์รหัสชวนกันมาลอยกระทง">
+<meta name="theme-color" content="#10143a">
+<link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--gold:#ffd27a;--ink:#fff7e6;--card:rgba(20,16,50,.72);--line:rgba(255,210,122,.35);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+*{box-sizing:border-box}
+body{margin:0;height:100%;overflow:hidden;font-family:'Mali','Sarabun','Noto Sans Thai',system-ui,sans-serif;color:var(--ink);background:linear-gradient(#070b24 0%,#1a1650 45%,#3a2a6b 62%,#0c1a3f 62%,#050c24 100%)}
+#sky{position:absolute;inset:0;height:62%;overflow:hidden}
+.star{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;animation:tw 3s infinite ease-in-out}
+@keyframes tw{50%{opacity:.2}}
+#moon{position:absolute;top:9%;right:10%;width:70px;height:70px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fffbe8,#ffe9a8 70%,#f3cf78);box-shadow:0 0 60px 20px rgba(255,230,160,.35)}
+#water{position:absolute;left:0;right:0;top:62%;bottom:0;overflow:hidden}
+#water::before{content:"";position:absolute;left:55%;top:0;width:60px;height:100%;transform:translateX(-50%);background:linear-gradient(rgba(255,230,160,.35),transparent);filter:blur(10px);animation:sh 4s infinite ease-in-out}
+@keyframes sh{50%{opacity:.5;width:90px}}
+.wave{position:absolute;left:-50%;width:200%;height:30px;opacity:.5;background:radial-gradient(circle at 20px 30px,transparent 18px,rgba(140,170,255,.35) 19px,transparent 21px) 0 0/40px 30px repeat-x;animation:wv 9s linear infinite}
+@keyframes wv{to{transform:translateX(25%)}}
+#layer{position:absolute;inset:0;pointer-events:none}
+.k{position:absolute;width:92px;margin-left:-46px;text-align:center;will-change:left;animation:pop .9s ease-out}
+@keyframes pop{from{transform:scale(.2);opacity:0}}
+.k .in{animation:bob 3.2s infinite ease-in-out}
+@keyframes bob{50%{transform:translateY(5px) rotate(2.5deg)}}
+.k .nm{font-size:12px;font-weight:600;color:var(--gold);text-shadow:0 1px 4px #000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.k .ws{font-size:10.5px;opacity:.9;text-shadow:0 1px 4px #000;white-space:normal;line-height:1.2}
+.flame{transform-origin:60px 14px;animation:fl .5s infinite alternate ease-in-out}
+@keyframes fl{to{transform:scale(1.15,.9) rotate(4deg)}}
+.rip{position:absolute;width:20px;height:8px;margin:-4px 0 0 -10px;border:2px solid rgba(255,230,160,.7);border-radius:50%;animation:rp 1.6s ease-out forwards}
+@keyframes rp{to{transform:scale(8);opacity:0}}
+h1{margin:0;font-size:26px;color:var(--gold);text-shadow:0 0 18px rgba(255,200,100,.6)}
+.sub{opacity:.8;font-size:13px;margin:2px 0 0}
+.card{background:var(--card);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:22px;padding:18px}
+#lobby{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92vw,380px);text-align:center;z-index:5;max-height:96%;overflow:auto}
+#ph{width:96px;height:96px;margin:12px auto 6px;border-radius:50%;border:3px dashed var(--gold);background:rgba(255,255,255,.08) center/cover;display:flex;align-items:center;justify-content:center;font-size:34px;cursor:pointer;overflow:hidden}
+input[type=text]{width:100%;padding:11px 14px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.1);color:var(--ink);font:inherit;font-size:16px;outline:none;margin:6px 0}
+input::placeholder{color:rgba(255,247,230,.55)}
+button{font:inherit;cursor:pointer;border:0;border-radius:14px;padding:11px 16px;font-weight:600;color:#3a1d00;background:linear-gradient(#ffe08f,#ffb347)}
+button.g{background:rgba(255,255,255,.12);color:var(--ink);border:1px solid var(--line)}
+button:disabled{opacity:.5}
+.row{display:flex;gap:8px;align-items:center}
+.row>*{flex:1}
+.sw{display:flex;gap:10px;justify-content:center;margin:8px 0}
+.sw i{width:30px;height:30px;border-radius:50%;border:3px solid transparent;cursor:pointer}
+.sw i.on{border-color:#fff}
+#hud{position:absolute;left:10px;right:10px;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:4;display:none}
+#hud .card{padding:10px 12px}
+#who{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.chip{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.12);border-radius:20px;padding:2px 10px 2px 2px;font-size:12px}
+.chip b{width:22px;height:22px;border-radius:50%;background:#555 center/cover;display:block}
+#bar{position:absolute;left:10px;right:10px;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);z-index:4;display:none}
+#note{font-size:11.5px;color:#ffd0a0;margin-top:6px}
+.small{font-size:12px;opacity:.8}
+</style>
+</head>
+<body>
+<div id="sky"><div id="moon"></div></div>
+<div id="water"><div class="wave" style="top:6%"></div><div class="wave" style="top:30%;animation-duration:13s"></div><div class="wave" style="top:58%;animation-duration:11s;animation-direction:reverse"></div></div>
+<div id="layer"></div>
+
+<div id="lobby" class="card">
+  <h1>🪷 ลอยกระทงออนไลน์</h1>
+  <p class="sub">ลอยกระทงด้วยกัน แม้อยู่คนละที่</p>
+  <div id="ph" title="เลือกรูปหน้า">📷</div>
+  <input id="file" type="file" accept="image/*" hidden>
+  <div class="small">แตะวงกลมเพื่อใส่รูปหน้าของคุณ</div>
+  <input id="name" type="text" maxlength="12" placeholder="ชื่อของคุณ">
+  <div class="sw" id="sw"></div>
+  <div id="joinInfo" class="small" style="display:none;margin:4px 0"></div>
+  <div id="configHint" class="small" style="margin:8px 0 2px;color:#ffd0a0">ก่อนเปิดใช้สาธารณะ เจ้าของเว็บต้องตั้งค่า Supabase ในไฟล์ index.html ตามคู่มือ README</div>
+  <button id="create" style="width:100%;margin-top:4px">✨ สร้างห้องใหม่</button>
+  <div class="row" style="margin-top:10px"><input id="code" type="text" maxlength="8" placeholder="รหัสห้อง" style="margin:0"><button class="g" id="join" style="flex:0 0 auto">เข้าห้อง</button></div>
+</div>
+
+<div id="hud"><div class="card">
+  <div class="row"><div style="flex:1.3"><div class="small">ห้อง <b id="rc" style="color:var(--gold);letter-spacing:1px"></b> · <span id="cnt"></span></div></div><button class="g" id="share" style="flex:0 0 auto;padding:8px 12px">🔗 ส่งลิงก์ชวน</button></div>
+  <input id="link" type="text" readonly style="display:none;font-size:12px">
+  <div id="who"></div>
+  <div id="note"></div><div class="small" style="margin-top:4px;opacity:.7">ชื่อ รูปโปรไฟล์ และคำอธิษฐานจะแสดงให้ผู้ที่อยู่ในห้องเดียวกันเห็น</div>
+</div></div>
+
+<div id="bar"><div class="card">
+  <input id="wish" type="text" maxlength="40" placeholder="เขียนคำอธิษฐาน (ไม่ใส่ก็ได้)">
+  <button id="float" style="width:100%">🪷 ลอยกระทง</button>
+</div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// ตั้งค่าสองค่านี้ก่อนนำเว็บขึ้นสาธารณะ ดูขั้นตอนใน README.md
+const SUPABASE_URL = 'ใส่_PROJECT_URL_ที่นี่';
+const SUPABASE_PUBLISHABLE_KEY = 'ใส่_PUBLISHABLE_KEY_ที่นี่';
+const supabaseConfigured = /^https:\/\//.test(SUPABASE_URL) &&
+  SUPABASE_URL.includes('.supabase.co') &&
+  SUPABASE_PUBLISHABLE_KEY.startsWith('sb_publishable_');
+let supabaseClient = null;
+if(supabaseConfigured && window.supabase?.createClient){
+  try{supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY)}
+  catch(err){console.error('Supabase initialization failed:',err)}
+}
+const clientId = (window.crypto?.randomUUID?.() || ('guest-'+Math.random().toString(36).slice(2)));
+let localState={n:'',p:'',c:0,w:'',f:0};
+let roomReady=false;
+
+const $=s=>document.querySelector(s);
+const COLORS=['#ff7eb6','#ffb347','#b388ff','#5ce1e6'];
+let me={n:'',p:'',c:0},code='',room=null,els={},uid=0;
+
+// stars
+for(let i=0;i<80;i++){const s=document.createElement('div');s.className='star';s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*3}s;opacity:${.4+Math.random()*.6}`;$('#sky').appendChild(s)}
+
+// แจ้งสถานะการตั้งค่าระบบห้องออนไลน์
+if(supabaseConfigured && supabaseClient){$('#configHint').textContent='ระบบห้องออนไลน์พร้อมใช้งานแล้ว ✨';$('#configHint').style.color='#b7f7c5'}
+
+// colour swatches
+COLORS.forEach((c,i)=>{const e=document.createElement('i');e.style.background=c;if(i==0)e.className='on';e.onclick=()=>{me.c=i;document.querySelectorAll('#sw i').forEach((x,j)=>x.classList.toggle('on',j==i))};$('#sw').appendChild(e)});
+
+// photo -> small square jpeg
+$('#ph').onclick=()=>$('#file').click();
+$('#file').onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  const img=new Image();img.onload=()=>{
+    const S=56,cv=document.createElement('canvas');cv.width=cv.height=S;
+    const m=Math.min(img.width,img.height),sx=(img.width-m)/2,sy=(img.height-m)/2;
+    cv.getContext('2d').drawImage(img,sx,sy,m,m,0,0,S,S);
+    let q=.6,d=cv.toDataURL('image/jpeg',q);
+    while(d.length>3600&&q>.2){q-=.1;d=cv.toDataURL('image/jpeg',q)}
+    me.p=d;$('#ph').style.backgroundImage=`url(${d})`;$('#ph').textContent='';
+    URL.revokeObjectURL(img.src)};
+  img.src=URL.createObjectURL(f)};
+
+const okPhoto=p=>typeof p==='string'&&/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/.test(p)&&p.length<6000;
+
+function kSvg(color,photo,id){
+  let pet='';
+  [-72,-48,-24,0,24,48,72].forEach(a=>pet+=`<ellipse cx="60" cy="56" rx="9" ry="21" transform="rotate(${a} 60 78)"/>`);
+  let pet2='';
+  [-60,-30,0,30,60].forEach(a=>pet2+=`<ellipse cx="60" cy="62" rx="7" ry="15" transform="rotate(${a} 60 78)"/>`);
+  const face=okPhoto(photo)?`<image href="${photo}" x="46" y="38" width="28" height="28" clip-path="url(#c${id})" preserveAspectRatio="xMidYMid slice"/>`:`<text x="60" y="58" font-size="16" text-anchor="middle">🪷</text>`;
+  return `<svg viewBox="0 0 120 100" width="100%"><defs><clipPath id="c${id}"><circle cx="60" cy="52" r="14"/></clipPath></defs>
+  <ellipse cx="60" cy="86" rx="52" ry="11" fill="#1f7a41"/><ellipse cx="60" cy="82" rx="48" ry="10" fill="#47b86a"/>
+  <g fill="${color}" stroke="#fff" stroke-opacity=".55" stroke-width="1">${pet}</g>
+  <g fill="#fff" fill-opacity=".38" stroke="#fff" stroke-opacity=".5" stroke-width=".8">${pet2}</g>
+  <rect x="57" y="14" width="6" height="22" rx="2" fill="#fff3c4"/>
+  <g class="flame"><ellipse cx="60" cy="9" rx="4" ry="7" fill="#ffb020"/><ellipse cx="60" cy="10" rx="2" ry="4" fill="#fff6b0"/></g>
+  <circle cx="60" cy="52" r="16.5" fill="#fff7e0" stroke="#ffd27a" stroke-width="2"/>${face}
+  <circle cx="18" cy="78" r="5" fill="#ff9f1c"/><circle cx="102" cy="78" r="5" fill="#ff9f1c"/><circle cx="30" cy="86" r="4" fill="#ffd166"/><circle cx="90" cy="86" r="4" fill="#ffd166"/></svg>`}
+
+function lane(s){let h=0;for(const ch of s)h=(h*31+ch.charCodeAt(0))>>>0;return (h%1000)/1000}
+
+function render(list){
+  const seen=new Set();
+  const who=$('#who');who.textContent='';
+  let n=0;
+  list.forEach(pe=>{
+    const p=pe.presence||{};if(!p.n)return;n++;
+    const key=pe.peer;seen.add(key);
+    const chip=document.createElement('div');chip.className='chip';
+    const b=document.createElement('b');if(okPhoto(p.p))b.style.backgroundImage=`url(${p.p})`;
+    const t=document.createElement('span');t.textContent=String(p.n).slice(0,12)+(pe.isMe?' (คุณ)':'');
+    chip.append(b,t);who.appendChild(chip);
+    if(!p.f){if(els[key]){els[key].el.remove();delete els[key]}return}
+    const sig=[p.n,p.p,p.c,p.w,p.f].join('|');
+    let o=els[key];
+    if(!o||o.sig!==sig){
+      if(o)o.el.remove();
+      const el=document.createElement('div');el.className='k';
+      const inn=document.createElement('div');inn.className='in';
+      inn.innerHTML=kSvg(COLORS[p.c%4]||COLORS[0],p.p,++uid);
+      const nm=document.createElement('div');nm.className='nm';nm.textContent=String(p.n).slice(0,12);
+      const ws=document.createElement('div');ws.className='ws';ws.textContent=String(p.w||'').slice(0,40);
+      inn.append(nm,ws);el.appendChild(inn);$('#layer').appendChild(el);
+      o=els[key]={el,sig,f:+p.f||Date.now(),l:lane(key)};
+      const r=document.createElement('div');r.className='rip';r.style.top=(62+o.l*26+6)+'%';r.style.left='10%';$('#layer').appendChild(r);setTimeout(()=>r.remove(),1700);
+    }
+  });
+  Object.keys(els).forEach(k=>{if(!seen.has(k)){els[k].el.remove();delete els[k]}});
+  $('#cnt').textContent=n+' คนในห้อง';
+}
+
+// drift
+(function tick(){
+  const now=Date.now();
+  for(const k in els){const o=els[k];
+    const x=((o.l*60+(now-o.f)/1000*1.1)%125)-12;
+    o.el.style.left=x+'%';o.el.style.top=(62+o.l*26)+'%'}
+  requestAnimationFrame(tick)})();
+
+function getPresence(){
+  return {
+    n:me.n, p:me.p, c:me.c,
+    w:String(localState.w||'').slice(0,40),
+    f:Number(localState.f)||0
+  };
+}
+
+function renderPresence(state){
+  const peers=[];
+  Object.entries(state||{}).forEach(([peer,entries])=>{
+    const p=Array.isArray(entries)?entries[entries.length-1]:entries;
+    if(p)peers.push({peer,isMe:peer===clientId,presence:p});
+  });
+  render(peers);
+}
+
+async function setP(patch){
+  Object.assign(localState,patch);
+  if(room&&roomReady){
+    try{await room.track(getPresence())}
+    catch(err){$('#note').textContent='การส่งข้อมูลสะดุด กรุณาลองใหม่อีกครั้ง'}
+  }else{
+    render([{peer:clientId,isMe:true,presence:getPresence()}]);
+  }
+}
+
+async function enter(c){
+  code=String(c||'').toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,8);
+  if(!code){alert('กรุณากรอกรหัสห้อง');return}
+  me.n=($('#name').value.trim()||'เพื่อน').slice(0,12);
+  localState={n:me.n,p:me.p,c:me.c,w:'',f:0};
+  try{location.hash=code}catch(e){}
+  $('#lobby').style.display='none';$('#hud').style.display='block';$('#bar').style.display='block';
+  $('#rc').textContent=code;
+
+  if(room&&supabaseClient){
+    const oldRoom=room;room=null;roomReady=false;
+    try{await supabaseClient.removeChannel(oldRoom)}catch(e){}
+  }
+
+  if(!supabaseClient){
+    $('#note').textContent='โหมดทดลองคนเดียว: เจ้าของเว็บยังไม่ได้ตั้งค่า Supabase จึงยังเชื่อมผู้เล่นจากอุปกรณ์อื่นไม่ได้';
+    render([{peer:clientId,isMe:true,presence:getPresence()}]);
+    return;
+  }
+
+  try{
+    room=supabaseClient.channel('loy-'+code,{
+      config:{private:false,presence:{key:clientId}}
+    });
+    room.on('presence',{event:'sync'},()=>renderPresence(room.presenceState()));
+    room.subscribe(async status=>{
+      if(status==='SUBSCRIBED'){
+        roomReady=true;
+        try{
+          await room.track(getPresence());
+          renderPresence(room.presenceState());
+          $('#note').textContent='แชร์รหัสห้องหรือกด “ส่งลิงก์ชวน” ให้เพื่อนเข้ามาลอยกระทงด้วยกันได้เลย 💕';
+        }catch(err){
+          roomReady=false;
+          $('#note').textContent='เชื่อมต่อห้องได้ แต่ส่งสถานะไม่สำเร็จ กรุณาตรวจสอบการตั้งค่า Realtime';
+        }
+      }else if(['CHANNEL_ERROR','TIMED_OUT','CLOSED'].includes(status)){
+        roomReady=false;
+        $('#note').textContent='เชื่อมต่อห้องออนไลน์ไม่สำเร็จ กรุณาตรวจสอบ URL / Publishable key และการอนุญาต Public access ใน Supabase';
+        render([{peer:clientId,isMe:true,presence:getPresence()}]);
+      }
+    });
+  }catch(err){
+    room=null;roomReady=false;
+    $('#note').textContent='เกิดข้อผิดพลาดในการเชื่อมต่อห้องออนไลน์ กรุณาลองโหลดหน้าเว็บใหม่';
+    render([{peer:clientId,isMe:true,presence:getPresence()}]);
+  }
+}
+
+const mk=()=>{const a='abcdefghjkmnpqrstuvwxyz23456789';let s='';for(let i=0;i<5;i++)s+=a[Math.floor(Math.random()*a.length)];return s};
+$('#create').onclick=()=>enter(mk());
+$('#join').onclick=()=>enter($('#code').value);
+$('#float').onclick=()=>{
+  setP({w:$('#wish').value.trim().slice(0,40),f:Date.now(),n:me.n,p:me.p,c:me.c});
+  $('#float').textContent='🪷 ลอยอีกดวง';$('#wish').value=''};
+$('#share').onclick=async()=>{
+  const url=location.origin+location.pathname+'#'+code;
+  const L=$('#link');L.value=url;L.style.display='block';L.select();
+  try{await navigator.clipboard.writeText(url);$('#share').textContent='✅ คัดลอกแล้ว'}catch(e){
+    $('#share').textContent='🔗 คัดลอกลิงก์ด้านล่าง'}
+  setTimeout(()=>$('#share').textContent='🔗 ส่งลิงก์ชวน',2500)};
+
+// join via link
+if(!window.supabase?.createClient){$('#configHint').textContent='โหลดบริการเชื่อมต่อไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เน็ตแล้วโหลดใหม่';$('#configHint').style.color='#ffb3a7'}
+function fromHash(){
+  const h=(location.hash||'').replace('#','');
+  if(h&&!code){$('#code').value=h;$('#joinInfo').style.display='block';$('#joinInfo').textContent='🎟️ มีคนชวนคุณเข้าห้อง '+h+' — ใส่ชื่อ รูป แล้วกดเข้าห้อง'}}
+fromHash();addEventListener('hashchange',fromHash);
+</script>
+</body>
+</html>
