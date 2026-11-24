@@ -154,7 +154,7 @@ function render(list){
   Object.keys(els).forEach(k=>{if(!seen.has(k)){els[k].el.remove();delete els[k]}});
   $('#cnt').textContent=n+' คนในห้อง';
 }
-(function tick(){const now=Date.now();for(const k in els){const o=els[k];const x=((o.l*60+(now-o.f)/1000*1.1)%125)-12;o.el.style.left=x+'%';o.el.style.top=(62+o.l*13)+'%'}requestAnimationFrame(tick)})();
+(function tick(){const now=Date.now();for(const k in els){const o=els[k];const x=((o.l*60+(now-o.f)/1000*1.1)%125)-12;o.el.style.left=x+'%';o.el.style.top=(47+o.l*8)+'%'}requestAnimationFrame(tick)})();
 async function ensureSignedIn(){
   if(!auth||!db)throw new Error('Firebase ยังเริ่มต้นไม่สำเร็จ กรุณาตรวจสอบการตั้งค่า');
   if(auth.currentUser)return auth.currentUser;
