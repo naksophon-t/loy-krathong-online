@@ -20,12 +20,14 @@ body{margin:0;height:100%;overflow:hidden;font-family:'Mali','Sarabun','Noto San
 .wave{position:absolute;left:-50%;width:200%;height:30px;opacity:.5;background:radial-gradient(circle at 20px 30px,transparent 18px,rgba(140,170,255,.35) 19px,transparent 21px) 0 0/40px 30px repeat-x;animation:wv 9s linear infinite}
 @keyframes wv{to{transform:translateX(25%)}}
 #layer{position:absolute;inset:0;pointer-events:none}
-.k{position:absolute;width:92px;margin-left:-46px;text-align:center;will-change:left;animation:pop .9s ease-out}
+.k{position:absolute;width:160px;margin-left:-80px;text-align:center;will-change:left;animation:pop .9s ease-out;z-index:2}
 @keyframes pop{from{transform:scale(.2);opacity:0}}
-.k .in{animation:bob 3.2s infinite ease-in-out}
+.k .in{display:flex;flex-direction:column;align-items:center;gap:3px;animation:bob 3.2s infinite ease-in-out}
+.k svg{order:3;width:84px;height:70px;overflow:visible;filter:drop-shadow(0 3px 5px rgba(0,0,0,.55))}
 @keyframes bob{50%{transform:translateY(5px) rotate(2.5deg)}}
-.k .nm{font-size:12px;font-weight:600;color:var(--gold);text-shadow:0 1px 4px #000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.k .ws{font-size:10.5px;opacity:.9;text-shadow:0 1px 4px #000;white-space:normal;line-height:1.2}
+.k .nm{order:1;display:block;max-width:154px;padding:3px 10px;border:1px solid rgba(255,210,122,.8);border-radius:14px;background:rgba(5,12,36,.94);color:#ffe29a;font-size:13px;font-weight:600;line-height:1.35;text-shadow:0 1px 2px #000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 2px 8px rgba(0,0,0,.45)}
+.k .ws{order:2;display:block;max-width:154px;padding:3px 8px;border-radius:10px;background:rgba(5,12,36,.9);color:#fff;font-size:12px;font-weight:600;line-height:1.35;text-shadow:0 1px 2px #000;white-space:normal;overflow-wrap:anywhere;box-shadow:0 2px 7px rgba(0,0,0,.4)}
+.k .ws:empty{display:none}
 .flame{transform-origin:60px 14px;animation:fl .5s infinite alternate ease-in-out}
 @keyframes fl{to{transform:scale(1.15,.9) rotate(4deg)}}
 .rip{position:absolute;width:20px;height:8px;margin:-4px 0 0 -10px;border:2px solid rgba(255,230,160,.7);border-radius:50%;animation:rp 1.6s ease-out forwards}
@@ -152,7 +154,7 @@ function render(list){
   Object.keys(els).forEach(k=>{if(!seen.has(k)){els[k].el.remove();delete els[k]}});
   $('#cnt').textContent=n+' คนในห้อง';
 }
-(function tick(){const now=Date.now();for(const k in els){const o=els[k];const x=((o.l*60+(now-o.f)/1000*1.1)%125)-12;o.el.style.left=x+'%';o.el.style.top=(62+o.l*26)+'%'}requestAnimationFrame(tick)})();
+(function tick(){const now=Date.now();for(const k in els){const o=els[k];const x=((o.l*60+(now-o.f)/1000*1.1)%125)-12;o.el.style.left=x+'%';o.el.style.top=(62+o.l*13)+'%'}requestAnimationFrame(tick)})();
 async function ensureSignedIn(){
   if(!auth||!db)throw new Error('Firebase ยังเริ่มต้นไม่สำเร็จ กรุณาตรวจสอบการตั้งค่า');
   if(auth.currentUser)return auth.currentUser;
